@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>ORBIT DUEL — 円形アリーナ</title>
+    <meta name="description" content="円形アリーナで撃ち合う1対1のローグライク対戦シューター" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0a0a14" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ORBIT DUEL" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <script type="module" crossorigin src="./assets/index-COmncHD6.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B2C_efXn.css">
+  </head>
+  <body>
+    <main id="app">
+      <header class="heading"><div><small>NEON ARENA / 1 VS 1</small><h1>ORBIT DUEL</h1></div><span id="match-mode">CPU対戦</span></header>
+      <section class="arena" aria-label="対戦画面">
+        <canvas id="game" aria-label="左半分のスティックで移動、右半分のスライドで照準。PCではマウスの方へ移動（照準は自動）、またはWASD・矢印キーで移動してマウスで照準"></canvas>
+        <div id="title-screen" class="title-screen" data-scrollable>
+          <form id="start-form" class="menu-card" aria-labelledby="menu-title">
+            <div class="title-orbit" aria-hidden="true"><span></span><span></span></div>
+            <small>1 VS 1 / ROGUELIKE SHOOTER</small>
+            <div class="menu-title-row">
+              <h2 id="menu-title"><span>ORBIT</span> DUEL</h2>
+              <button id="settings-open" type="button" class="secondary-button settings-button" aria-haspopup="dialog" aria-controls="settings-dialog"><span aria-hidden="true">⚙</span> 設定</button>
+            </div>
+            <p class="menu-description">動いてかわし、自動射撃で勝負。20秒ごとに強化を選ぼう。</p>
+            <p class="menu-controls"><span class="pc-help" data-control-help="mouse">マウス：カーソルの方へ移動（照準は自動） · 1〜3キー：強化</span><span id="keyboard-help" class="pc-help" data-control-help="keyboard" hidden>WASD / 矢印キー：移動 · マウス：照準 · 1〜3キー：強化</span><span class="touch-help" data-touch-aim-help="title">左半分：移動 · 右半分：左右にスライドで照準を回す · 強化はタップ</span></p>
+            <p id="replay-notice" class="tower-notice replay-notice" hidden></p>
+            <p id="lab-notice" class="tower-notice replay-notice" hidden></p>
+            <fieldset class="difficulty-picker control-picker">
+              <legend>PCの操作</legend>
+              <label><input type="radio" name="control" value="mouse" checked /><span><strong>マウス</strong><small>カーソルの方へ移動 · 照準は自動で相手へ</small></span></label>
+              <label><input type="radio" name="control" value="keyboard" /><span><strong>キーボード</strong><small>WASD・矢印キーで移動 · マウスで照準</small></span></label>
+            </fieldset>
+            <fieldset id="machine-picker" class="machine-picker">
+              <legend>自分の機体 <small>CPU対戦・オンライン対戦の両方で使う</small></legend>
+            </fieldset>
+            <fieldset class="difficulty-picker">
+              <legend>CPUの難易度</legend>
+              <label><input type="radio" name="difficulty" value="easy" /><span><strong>やさしい</strong><small>ゆっくり動く、狙いが甘め</small></span></label>
+              <label><input type="radio" name="difficulty" value="normal" checked /><span><strong>ふつう</strong><small>間合いを保ち、近くの弾を回避</small></span></label>
+              <label><input type="radio" name="difficulty" value="hard" /><span><strong>むずかしい</strong><small>先読み射撃と弾道予測で攻める</small></span></label>
+              <label><input type="radio" name="difficulty" value="extreme" /><span><strong>おに</strong><small>全弾を先読みして回避、追尾弾を持って開始</small></span></label>
+            </fieldset>
+            <label class="cpu-machine">CPUの機体 <select id="cpu-machine" name="cpu-machine"><option value="random">おまかせ（毎回ランダム）</option></select></label>
+            <button id="start" type="submit">CPUと対戦 <span aria-hidden="true">→</span></button>
+            <div id="tower-menu" class="tower-menu">
+              <p class="online-heading">無限の塔 <span id="tower-season" class="tower-season"></span> <small>1人用 · 強化を持ち越して登る · 自分の機体で挑戦</small></p>
+              <p id="tower-notice" class="tower-notice" hidden></p>
+              <div class="online-actions">
+                <button id="tower-continue" type="button" hidden>続きから</button>
+                <button id="tower-new" type="button" class="secondary-button">はじめから</button>
+                <button id="tower-ranking" type="button" class="secondary-button">ランキング</button>
+              </div>
+            </div>
+            <div id="online-menu" class="online-menu">
+              <p class="online-heading">オンライン対戦</p>
+              <label class="online-room-option"><input id="online-health-pickups" type="checkbox" role="switch" /> 作る部屋の回復アイテム <span>HP割合が低い側の近くに出やすい（ランダムマッチはON）</span></label>
+              <div class="online-actions">
+                <button id="online-quick" type="button">ランダムマッチ</button>
+                <button id="online-create" type="button" class="secondary-button">部屋を作る</button>
+                <span class="online-join"><input id="online-code" type="text" inputmode="text" maxlength="4" placeholder="合言葉" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="部屋の合言葉（4文字）" /><button id="online-join" type="button" class="secondary-button">部屋に入る</button></span>
+              </div>
+            </div>
+          </form>
+        </div>
+        <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title" data-scrollable>
+          <h2 id="settings-title">設定</h2>
+          <div class="settings-grid">
+            <section class="setting-group">
+              <h3><label for="sensitivity">操作の感度</label></h3>
+              <p class="setting-note">高いほど、スティックを少し倒すだけで速く動き、照準もよく回る。PCのマウス操作では、カーソルの近くでも速く動く。</p>
+              <div class="sensitivity-row">
+                <input id="sensitivity" type="range" value="1" />
+                <output id="sensitivity-value" for="sensitivity">×1.0</output>
+              </div>
+              <button id="sensitivity-reset" type="button" class="secondary-button setting-small-button">標準に戻す</button>
+            </section>
+            <section class="setting-group">
+              <h3>BGM</h3>
+              <label class="setting-switch"><input id="bgm-enabled" type="checkbox" role="switch" /> BGMを鳴らす</label>
+              <p class="setting-note">標準はオフ。オフのときは音を一切出さないので、ほかのアプリの音楽を聴きながら遊べます。オンにすると、最初に画面に触れたときから鳴り始めます。</p>
+              <label class="setting-sub-label" for="bgm-volume">音量</label>
+              <div class="sensitivity-row">
+                <input id="bgm-volume" type="range" min="0" max="100" step="5" value="50" />
+                <output id="bgm-volume-value" for="bgm-volume">50%</output>
+              </div>
+            </section>
+            <section class="setting-group">
+              <h3>試合の再開</h3>
+              <label class="setting-switch"><input id="countdown-enabled" type="checkbox" role="switch" /> 強化や一時停止のあとに 3・2・1 を数える</label>
+              <p class="setting-note">強化を選んだあとと、一時停止から再開するときに、戦闘に戻る前に1.5秒（3・2・1）止まります。CPU対戦と無限の塔で使えます（オンライン対戦では使えません）。</p>
+            </section>
+            <section class="setting-group pc-only" role="radiogroup" aria-labelledby="pc-aim-title">
+              <h3 id="pc-aim-title">PCの照準 <small>キーボード操作のとき</small></h3>
+              <label class="setting-option"><input type="radio" name="pc-aim" value="cursor" checked /><span><strong>機体からカーソルへ（標準）</strong><small>機体からマウスカーソルへの向きが照準になる</small></span></label>
+              <label class="setting-option"><input type="radio" name="pc-aim" value="click" /><span><strong>クリックした点からカーソルへ</strong><small>画面の右半分をクリックした点から、カーソルへの向きが照準になる（スマホの「指の向きに合わせる」と同じ）。もう一度クリックすると始点が変わる</small></span></label>
+            </section>
+            <section class="setting-group" role="radiogroup" aria-labelledby="aim-title">
+              <h3 id="aim-title">スマホの照準 <small>画面の右半分</small></h3>
+              <label class="setting-option"><input type="radio" name="aim-mode" value="relative" checked /><span><strong>動かした分だけ回る（標準）</strong><small>指を左右に動かすと照準が回る（右で時計回り）</small></span></label>
+              <label class="setting-option"><input type="radio" name="aim-mode" value="direction" /><span><strong>指の向きに合わせる</strong><small>指を置いた位置から動かした向きが照準になる</small></span></label>
+            </section>
+          </div>
+          <details class="settings-credits">
+            <summary>クレジット（BGM）</summary>
+            <ul>
+              <li>ホーム：「vintage menu」 iamoneabe（CC0）</li>
+              <li>ステージの合間：「Currents」 tricksntraps（T &amp; T Free Cyberpunk Pack、CC0）</li>
+              <li>ショップ：「Main Menu Music (Loop)」 Alex McCulloch / Pro Sensory（CC0）</li>
+              <li>戦闘：「5 Chiptunes (Action)」 Juhani Junkala / SubspaceAudio（CC0）</li>
+              <li>ボス：「Tribal Chaos」 tricksntraps（T &amp; T Free Cyberpunk Pack、CC0）</li>
+            </ul>
+            <p>出典：OpenGameArt.org</p>
+          </details>
+          <div class="result-actions"><button id="settings-close" type="button">閉じる</button></div>
+        </dialog>
+        <div id="online-screen" class="online-screen" hidden role="status" aria-live="polite">
+          <div class="online-card">
+            <small>ONLINE DUEL</small>
+            <p id="online-message" class="online-message"></p>
+            <p id="online-detail" class="online-detail"></p>
+            <div class="result-actions"><button id="online-retry" type="button" hidden>もう一度さがす</button><button id="online-cancel" type="button" class="secondary-button">やめる</button></div>
+          </div>
+        </div>
+        <div id="resume-countdown" class="resume-countdown" aria-live="assertive"><span class="resume-countdown-number"></span></div>
+        <button id="pause-open" class="pause-button" type="button" hidden aria-label="一時停止" title="一時停止（Esc）"><span class="pause-icon" aria-hidden="true"></span></button>
+        <button id="lab-speed" class="pause-button lab-speed-button" type="button" hidden aria-label="観戦の速さ" title="観戦の速さ">×1</button>
+        <div id="upgrade-screen" class="upgrade-screen" hidden role="dialog" aria-label="強化選択"></div>
+        <dialog id="pause-dialog" class="settings-dialog pause-dialog" aria-labelledby="pause-title">
+          <h2 id="pause-title">一時停止中</h2>
+          <div id="pause-main">
+            <p class="setting-note">試合を止めています。</p>
+            <div class="result-actions"><button id="pause-resume" type="button">再開する</button><button id="pause-surrender" type="button" class="secondary-button">あきらめる</button></div>
+          </div>
+          <div id="pause-confirm" hidden>
+            <p class="pause-warning">本当にあきらめますか？ このランはここで終わります。ここまでの記録は、ランキングに登録できます。</p>
+            <div class="result-actions"><button id="pause-surrender-confirm" type="button" class="danger-button">あきらめる</button><button id="pause-back" type="button" class="secondary-button">戻る</button></div>
+          </div>
+        </dialog>
+        <div id="tower-screen" class="tower-screen" hidden role="region" aria-label="無限の塔" data-scrollable></div>
+        <div id="lab-screen" class="tower-screen" hidden role="region" aria-label="CPUの塔のぼり" data-scrollable></div>
+        <div id="admin-screen" class="tower-screen" hidden role="region" aria-label="運営メニュー" data-scrollable></div>
+        <div id="result" class="result" hidden role="region" aria-labelledby="result-title" tabindex="-1" data-scrollable>
+          <div class="result-card">
+            <small>DUEL REPORT</small>
+            <h2 id="result-title" aria-live="polite"></h2>
+            <div id="result-content"></div>
+            <div class="result-actions"><button id="restart" type="button">もう一度（同じ難易度）</button><button id="back-to-title" class="secondary-button" type="button">タイトルへ</button></div>
+          </div>
+        </div>
+      </section>
+      <footer><span class="pc-help" data-control-help="mouse">マウス：カーソルの方へ移動 · 照準は自動 / 1〜3：強化</span><span id="footer-keyboard-help" class="pc-help" data-control-help="keyboard" hidden><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / 矢印キー：移動 · マウス：照準 / 1〜3：強化</span><span class="touch-help" data-touch-aim-help="footer">左半分：移動 / 右半分：左右にスライドで照準を回す</span><span class="touch-help">強化はタップで選択</span><span>射撃は自動 · CPU対戦</span></footer>
+    </main>
+    <div id="orientation-notice" class="orientation-notice" hidden role="status"><div><span class="rotate-icon" aria-hidden="true">↻</span><h2>横向きにしてください</h2><p>スマートフォンを横にすると再開します</p></div></div>
+  </body>
+</html>
